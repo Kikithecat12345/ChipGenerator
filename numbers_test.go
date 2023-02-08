@@ -3,8 +3,40 @@ package main
 import (
 	"github.com/stretchr/testify/assert"
 	"math/big"
+	"strconv"
 	"testing"
 )
+
+var testsMap = map[int]string{
+	1:    "million",
+	2:    "billion",
+	3:    "trillion",
+	4:    "quadrillion",
+	5:    "quintillion",
+	6:    "sextillion",
+	7:    "septillion",
+	8:    "octillion",
+	9:    "nonillion",
+	10:   "decillion",
+	20:   "vigintillion",
+	30:   "trigintillion",
+	40:   "quadragintillion",
+	50:   "quinquagintillion",
+	60:   "sexagintillion",
+	70:   "septuagintillion",
+	80:   "octogintillion",
+	90:   "nonagintillion",
+	100:  "centillion",
+	200:  "ducentillion",
+	300:  "trecentillion",
+	400:  "quadringentillion",
+	500:  "quingentillion",
+	600:  "sescentillion",
+	700:  "septingentillion",
+	800:  "octingentillion",
+	900:  "nongentillion",
+	1000: "millinillion",
+}
 
 func g(t *testing.T, number, name string) {
 	var a big.Int
@@ -17,19 +49,9 @@ func h(t *testing.T, number *big.Int, name string) {
 }
 
 func TestIllionGenerator(t *testing.T) {
-	g(t, "1", "million")
-	g(t, "10", "decillion")
-	g(t, "100", "centillion")
-	g(t, "120", "viginticentillion")
-	g(t, "200", "ducentillion")
-	g(t, "300", "trecentillion")
-	g(t, "400", "quadringentillion")
-	g(t, "500", "quingentillion")
-	g(t, "600", "sescentillion")
-	g(t, "700", "septingentillion")
-	g(t, "800", "octingentillion")
-	g(t, "900", "nongentillion")
-	g(t, "1000", "millinillion")
+	for k, v := range testsMap {
+		g(t, strconv.Itoa(k), v)
+	}
 	g(t, "389457", "novemoctogintatrecentiseptenquinquagintaquadringentillion")
 }
 
