@@ -8,8 +8,8 @@ To support arbirary chip denominations, the code uses math/big to handle arbitra
 */
 
 import (
+	"fmt"
 	"math/big"
-	"strconv"
 )
 
 // == variables ==S
@@ -57,81 +57,67 @@ var littlePrefixes = map[int]string{
 }
 
 func main() {
-
+	fmt.Println(generateIllion(big.NewInt(471)))
+	fmt.Println(generateIllion(big.NewInt(1984)))
+	fmt.Println(generateIllion(big.NewInt(981)))
+	fmt.Println(generateIllion(big.NewInt(3485793)))
 }
 
 // this function takes a number and returns a string with the number in illion form, where the number is the illion in the sequence of illions.
 // takes in a big.Int and returns a string.
 // examples: 1 -> "million", 10 -> "decillion", 24 -> "quattorvigintillion" etc.
-func generateIllion(illion *big.Int) string {
-	// we need to convert the big.Int to an array of ints, each item in the array is 3 digits of the number. if the number is not divisible by 3, we prioritize the least significant digits.
-	// for example, 23498237491 -> [23, 498, 237, 491]
+func generateIllion(illn *big.Int) string {
+	str := illn.String()
+	// pad the start of the string with 0s so that it's divisible by 3.
+	for len(str)%3 != 0 {
+		str = "0" + str
+	}
+	strLen := len(str)
+	var lastPrefix int
+	var illionWord string
 
-	// first we convert the big.Int to a string.
-	illionStr := illion.String()
-	// now we split the string into groups of 3 digits.
-	arrTemp := make([]string, len(illionStr)/3+1) // we add 1 to the length of the array to account for the case where the number is not divisible by 3. Potentially overallocating memory here, but it's not a big deal.
-	for i := 0; i < len(illionStr); i += 3 {
-		if i+3 < len(illionStr) {
-			arrTemp[i/3] = illionStr[i : i+3]
+	// iterate in reverse order
+	for i := strLen - 1; i >= 0; i-- {
+		iMod := i % 3
+		// are we at the start of a new group of 3 digits, and are they all 0?
+		if iMod == 2 && str[i-2:i+1] == "000" {
+			// if all the digits are 0, it's "nilli"
+			illionWord = "nilli" + illionWord
 		} else {
-			arrTemp[i/3] = illionStr[i:]
-		}
-	}
-	// now we convert the array of strings to an array of ints.
-	arr := make([]int, len(arrTemp))
-	for i, v := range arrTemp {
-		arr[i], _ = strconv.Atoi(v)
-	}
-
-	illionWord := ""
-	// now we iterate through the array and generate the illion word using the prefixes map, and the littlePrefixes map.
-	for _, v := range arr {
-		if v == 0 { // is it 0?
-			illionWord += prefixes[0]
-			continue
-		}
-		// if it's less than 10, we have to use the littlePrefixes map.
-		if v < 10 {
-			illionWord += littlePrefixes[v]
-			continue
-		}
-		// now we need to treat the 3 digits seperately, starting with the most significant digit, the hundreds digit.
-		var lastIllion int
-
-		if v/100 != 0 {
-			lastIllion = v / 100 * 100
-			illionWord += prefixes[lastIllion]
-
-		}
-		if v%100 != 0 {
-			lastIllion = v % 100 * 10
-			illionWord += prefixes[lastIllion]
-		}
-		/*
-			the ones case is special, because english is weird.
-			basically, we have to modify the ones digit to account for english grammar.
-			"septe" and "nove" might need to get an M or N added to the end of them, depending on the context.
-			"se" gets an S or X sometimes, and "tre" gets an S as well.
-			all of this information is at https://en.wikipedia.org/wiki/Names_of_large_numbers#Extensions_of_the_standard_dictionary_numbers.
-		*/
-		onesDigit := v % 10
-		if onesDigit != 0 {
-			if (onesDigit == 3 || illionWord == 6) && (lastIllion == 20 || lastIllion == 30 || lastIllion == 40 || lastIllion == 50 || lastIllion == 300 || lastIllion == 400 || lastIllion == 500) {
-				// tres / ses case
-				illionWord += prefixes[onesDigit] + "s"
-			} else if onesDigit == 6 && (lastIllion == 80 || lastIllion == 100 || lastIllion == 800) {
-				// sex case
-				illionWord += "sex"
-			} else if (onesDigit == 7 || onesDigit == 9) && (lastIllion == 20 || lastIllion == 80 || lastIllion == 800) {
-				// septen / noven case
-				illionWord += prefixes[onesDigit] + "n"
-			} else if (onesDigit == 7 || onesDigit == 9) && (lastIllion == 10 || lastIllion == 30 || lastIllion == 40 || lastIllion == 50 || lastIllion == 60 || lastIllion == 70 || lastIllion == 100 || lastIllion == 200 || lastIllion == 300 || lastIllion == 400 || lastIllion == 500 || lastIllion == 600 || lastIllion == 700) {
-				// septem / novem case
-				illionWord += prefixes[onesDigit] + "m"
-			} else {
-				illionWord += prefixes[onesDigit]
+			switch iMod {
+			case 0: // hundreds digit
+				if str[i] != '0' {
+					lastPrefix = int(str[i]-'0') * 100
+					illionWord = prefixes[lastPrefix] + illionWord
+				}
+			case 1: // tens digit
+				if str[i] != '0' {
+					lastPrefix = int(str[i]-'0') * 10
+					illionWord = prefixes[lastPrefix] + illionWord
+				}
+			case 2: // ones digit
+				// if tens and hundreds digits are 0, we use the littlePrefixes map instead of the prefixes map.
+				if str[i-1] == '0' && str[i-2] == '0' {
+					lastPrefix = int(str[i] - '0')
+					illionWord = littlePrefixes[lastPrefix] + illionWord
+				} else {
+					// we use the prefixes map, but account for english grammar rules.
+					if str[i] == '0' {
+						continue
+					} else if (str[i] == '3' || str[i] == '6') && (lastPrefix == 20 || lastPrefix == 30 || lastPrefix == 40 || lastPrefix == 50 || lastPrefix == 300 || lastPrefix == 400 || lastPrefix == 500) {
+						illionWord = prefixes[int(str[i]-'0')] + "s" + illionWord
+					} else if str[i] == 6 && (lastPrefix == 80 || lastPrefix == 100 || lastPrefix == 800) {
+						illionWord = "sex" + illionWord
+					} else if (str[i] == 7 || str[i] == 9) && (lastPrefix == 20 || lastPrefix == 80 || lastPrefix == 800) {
+						illionWord = prefixes[int(str[i]-'0')] + "n" + illionWord
+					} else if (str[i] == 7 || str[i] == 9) && (lastPrefix == 10 || lastPrefix == 30 || lastPrefix == 40 || lastPrefix == 50 || lastPrefix == 60 || lastPrefix == 70 || lastPrefix == 100 || lastPrefix == 200 || lastPrefix == 300 || lastPrefix == 400 || lastPrefix == 500 || lastPrefix == 600 || lastPrefix == 700) {
+						illionWord = prefixes[int(str[i]-'0')] + "m" + illionWord
+					} else {
+						illionWord = prefixes[int(str[i]-'0')] + illionWord
+					}
+				}
 			}
+
 		}
 	}
 	// add the "illion" suffix.
@@ -144,5 +130,5 @@ func generateIllion(illion *big.Int) string {
 	} else {
 		illionWord += "illion"
 	}
-	return illionWord // @MrMelon54 for the love of god please optimize this function, i don't know what i'm doing
+	return illionWord
 }
