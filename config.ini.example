@@ -1,0 +1,10 @@
+[IO]
+test1 = 1
+test2 = "2"
+test3 = 3.0
+
+[Chip]
+test4 = 4
+test5 = "5"
+test6 = 6.0
+
