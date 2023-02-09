@@ -1,4 +1,4 @@
-module kikithecat12345/chipGenerator
+module github.com/Kikithecat12345/ChipGenerator
 
 go 1.20
 
