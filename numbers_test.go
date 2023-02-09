@@ -1,10 +1,11 @@
 package ChipGenerator
 
 import (
-	"github.com/stretchr/testify/assert"
 	"math/big"
 	"strconv"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var testsMap = map[int]string{
@@ -45,7 +46,12 @@ func g(t *testing.T, number, name string) {
 }
 
 func h(t *testing.T, number *big.Int, name string) {
-	assert.Equal(t, name, GenerateIllion(number))
+	a := CustomChip{
+		Magnitude:   number,
+		StartDigits: 0,
+		Colors:      []string{},
+	}
+	assert.Equal(t, name, a.GenerateIllion())
 }
 
 func TestIllionGenerator(t *testing.T) {
@@ -58,7 +64,9 @@ func TestIllionGenerator(t *testing.T) {
 func BenchmarkIllionGenerator(b *testing.B) {
 	var a big.Int
 	a.SetString("69696969696969696969", 10)
+	var c CustomChip
+	c.Magnitude = &a
 	for i := 0; i < b.N; i++ {
-		_ = GenerateIllion(&a)
+		_ = c.GenerateIllion()
 	}
 }

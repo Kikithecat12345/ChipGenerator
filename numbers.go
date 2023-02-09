@@ -12,6 +12,13 @@ import (
 	"strings"
 )
 
+// == structs ==
+type CustomChip struct {
+	Magnitude   *big.Int
+	StartDigits float32
+	Colors      []string
+}
+
 // == variables ==
 var prefixes = map[int]string{
 	0:   "nilli",
@@ -59,7 +66,10 @@ var littlePrefixes = map[int]string{
 // GenerateIllion takes a number and returns a string with the number in illion form, where the number is the illion in the sequence of illions.
 // takes in a big.Int and returns a string.
 // examples: 1 -> "million", 10 -> "decillion", 24 -> "quattorvigintillion" etc.
-func GenerateIllion(illn *big.Int) string {
+func (c CustomChip) GenerateIllion() string {
+	// convert the magnitude to an illion by subtracting 3, then dividing by 3.
+	var illn *big.Int
+	illn.Sub(c.Magnitude, big.NewInt(3)).Div(illn, big.NewInt(3))
 	str := illn.String()
 
 	// ignore an empty string
@@ -119,6 +129,10 @@ func GenerateIllion(illn *big.Int) string {
 	}
 	return illionWord
 }
+
+// == helper functions ==
+
+// = generateIllion helper functions =
 
 func onesDigitPrefix(digit int, lastPrefix int) string {
 	switch {

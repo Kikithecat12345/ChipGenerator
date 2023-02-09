@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/Kikithecat12345/ChipGenerator"
 	"math/big"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/Kikithecat12345/ChipGenerator"
 )
 
 var bi1 = big.NewInt(1)
@@ -22,10 +23,17 @@ func main() {
 }
 
 func run(n string) {
-	var a big.Int
-	a.SetString(n, 10)
+
+	var temp big.Int
+	temp.SetString(n, 10)
+	var temptwo []string
+
+	a := ChipGenerator.CustomChip{
+		Magnitude:   &temp,
+		StartDigits: 1,
+		Colors:      temptwo}
 	t := time.Now()
-	_ = ChipGenerator.GenerateIllion(&a)
+	_ = a.GenerateIllion()
 	n2 := time.Since(t)
 	fmt.Println(n2)
 }
