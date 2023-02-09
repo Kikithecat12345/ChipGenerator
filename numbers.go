@@ -1,4 +1,4 @@
-package main
+package ChipGenerator
 
 /*
 This code (and it's accompanying Lua script) calculates, generates, and imports custom poker chips of arbitrary denominations and colors into Tabletop Simulator.
@@ -9,6 +9,7 @@ To support arbirary chip denominations, the code uses math/big to handle arbitra
 
 import (
 	"math/big"
+	"strings"
 )
 
 // == variables ==
@@ -107,7 +108,7 @@ func GenerateIllion(illn *big.Int) string {
 	// add the "illion" suffix.
 	// however, if it ends in "illi" we only add "on", for example "milli" -> "million
 	// and if it only ends in a vowel we remove it, then add "illion". for example "quadraginta" -> "quadragintillion"
-	if len(illionWord) > 4 && illionWord[len(illionWord)-4:] == "illi" {
+	if strings.HasSuffix(illionWord, "illi") {
 		illionWord += "on"
 	} else {
 		lastIndex := len(illionWord) - 1

@@ -1,4 +1,4 @@
-package main
+package ChipGenerator
 
 import (
 	"github.com/stretchr/testify/assert"
