@@ -8,6 +8,7 @@ To support arbirary chip denominations, the code uses math/big to handle arbitra
 */
 
 import (
+	"math"
 	"math/big"
 	"strings"
 )
@@ -15,7 +16,7 @@ import (
 // == structs ==
 type CustomChip struct {
 	Magnitude   *big.Int
-	StartDigits float32
+	StartDigits int64
 	Colors      []string
 }
 
@@ -128,6 +129,20 @@ func (c CustomChip) GenerateIllion() string {
 		illionWord += "illion"
 	}
 	return illionWord
+}
+
+// takes in the magnitude and starter digits and forms a big.Int result.
+func (c CustomChip) GetValue() *big.Int {
+	// set u to c.StartDigits rounded down to nearest power of 10
+	u := big.NewInt(int64(math.Floor(math.Log10(float64(c.StartDigits)))))
+	v := big.NewInt(0)
+	v.Exp(big.NewInt(10), c.Magnitude, nil).Mul(v, big.NewInt(c.StartDigits)).Div(v, u)
+	return v
+}
+
+// takes in the magnitude, and tries to get as close as it can with Knuth's Up Arrow Notation.
+func (c CustomChip) KnuthUpArrow() string {
+	return ""
 }
 
 // == helper functions ==
